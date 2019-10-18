@@ -45,7 +45,7 @@ function talker() {
 		amqp_ch.assertExchange("FAPS_DEMONSTRATOR_LiveStreamData_MachineData", 'fanout', {durable: false});
 
 		// test client
-		amqp_ch.assertQueue('FAPS_DEMONSTRATOR_ImageProcessing_ProcessingSignals_ROS', {exclusive: true}, function(err, q) {
+		amqp_ch.assertQueue('FAPS_DEMONSTRATOR_ImageProcessing_ProcessingSignals_ROS', {exclusive: false, durable: false, autoDelete:true}, function(err, q) {
 		    if (err){
 			console.log('AMQP Queue Assertion Error: ' + err.toString());
 		    }else{
