@@ -48,8 +48,8 @@ function talker() {
 					console.log('AMQP Chanel Error: ' + error.toString());
 					return;
 				}
-
 				amqp_ch = ch;
+				
 				// Publisher for AGV
 				amqp_ch.assertExchange("FAPS_DEMONSTRATOR_Conveyor_DataFromCloud", 'fanout', {durable: false});
 				amqp_ch.assertExchange("FAPS_DEMONSTRATOR_OrderManagement_Orders", 'fanout', {durable: false});
