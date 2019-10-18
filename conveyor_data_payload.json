@@ -22,14 +22,14 @@
             "Motor_Umsetzer_22_Velocity": 0,
             "Motor_Umsetzer_22_Acceleration": 0,
             "Motor_Umsetzer_22_Power": 0,
-            "Produkt_wartet_auf_Abgabe": 0,
-            "Product_abgegeben": 0,
-            "AGV_bereit": 0,
-            "Produkt_Band2_Bereit": 8,
-            "Linearachse_Fertig": 0
+            "Produkt_wartet_auf_Abgabe": false,
+            "Product_abgegeben": false,
+            "AGV_bereit": false,
+            "Produkt_Band2_Bereit": true,
+            "Linearachse_Fertig": false
         }
     },
     "id": "Conveyor_Data",
-    "timestampOnSend": 1571369512613,
-    "timestamp": "2019-10-18 03:31:52"
+    "timestampOnSend": 1571376480964,
+    "timestamp": "2019-10-18 05:28:00"
 }
