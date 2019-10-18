@@ -50,6 +50,38 @@ function talker() {
 				}
 
 				amqp_ch = ch;
+				// Publisher for AGV
+				amqp_ch.assertExchange("FAPS_DEMONSTRATOR_Conveyor_DataFromCloud", 'fanout', {durable: false},function(err, q) {
+					if (err){
+						console.log('AMQP Exchange for message of the AGV could not be found: ' + err.toString());
+					}else{
+						// Start the listener
+						let sub = rosNode.subscribe('/faps_demo', std_msgs.String, (data) => {
+							console.log(" [*] Waiting for messages from the AGV. To exit press CTRL+C"); 
+							// define callback execution
+							rosnodejs.log.info('I heard: [' + data.data + ']');
+
+							var msgObj = JSON.stringify(data.data);
+							if(msgObj.title){
+								if(msgObj.title === "AGV_bereit"){
+									var obj_to_pub = {
+										"AGV_bereit": 1
+									}
+									// Send Signal to Demonstrator
+									amqp_ch.publish(FAPS_DEMONSTRATOR_Conveyor_DataFromCloud, '', Buffer.from(JSON.stringify(obj_to_pub)));
+
+									// Wait for 2 seconds and reset the signal
+									setTimeout(function() {
+										obj_to_pub.AGV_bereit = 0;
+										// Send Signal to Demonstrator
+										amqp_ch.publish(FAPS_DEMONSTRATOR_Conveyor_DataFromCloud, '', Buffer.from(JSON.stringify(obj_to_pub)));
+									}, 2000);
+								}
+							}
+						});
+					}
+				});
+
 				amqp_ch.assertExchange("FAPS_DEMONSTRATOR_OrderManagement_Orders", 'fanout', {durable: false});
 				amqp_ch.assertExchange("FAPS_DEMONSTRATOR_LiveStreamData_ConveyorData", 'fanout', {durable: false});
 				
@@ -61,7 +93,7 @@ function talker() {
 						console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
 						ch.bindQueue(q.queue, "FAPS_DEMONSTRATOR_OrderManagement_Orders", '');			
 						ch.consume(q.queue, function(msg) {
-							_obj = JSON.parse(msg.content.toString());
+							var _obj = JSON.parse(msg.content.toString());
 							var obj_to_send = {
 								title:'Neuer Auftrag',
 								payload: _obj
@@ -85,7 +117,7 @@ function talker() {
 						console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
 						ch.bindQueue(q.queue, "FAPS_DEMONSTRATOR_LiveStreamData_ConveyorData", '');			
 						ch.consume(q.queue, function(msg) {
-							_obj = JSON.parse(msg.content.toString());
+							var _obj = JSON.parse(msg.content.toString());
 							if (last_Produkt_wartet_auf_Abgabe == null){
 								last_Produkt_wartet_auf_Abgabe = _obj.value.DB33.Produkt_wartet_auf_Abgabe;
 							}
@@ -127,40 +159,8 @@ function talker() {
 						}, {noAck: true});
 					}
 				});
-
-				// Publisher for AGV
-				amqp_ch.assertExchange("FAPS_DEMONSTRATOR_Conveyor_DataFromCloud", 'fanout', {durable: false},function(err, q) {
-					if (err){
-						console.log('AMQP Exchange for message of the AGV could not be found: ' + err.toString());
-					}else{
-						// Start the listener
-						let sub = rosNode.subscribe('/faps_demo', std_msgs.String, (data) => { 
-							// define callback execution
-							rosnodejs.log.info('I heard: [' + data.data + ']');
-
-							var msgObj = JSON.stringify(data.data);
-							if(msgObj.title){
-								if(msgObj.title === "AGV_bereit"){
-									var obj_to_pub = {
-										"AGV_bereit": 1
-									}
-									// Send Signal to Demonstrator
-									amqp_ch.publish(FAPS_DEMONSTRATOR_Conveyor_DataFromCloud, '', Buffer.from(JSON.stringify(obj_to_pub)));
-
-									// Wait for 2 seconds and reset the signal
-									setTimeout(function() {
-										obj_to_pub.AGV_bereit = 0;
-										// Send Signal to Demonstrator
-										amqp_ch.publish(FAPS_DEMONSTRATOR_Conveyor_DataFromCloud, '', Buffer.from(JSON.stringify(obj_to_pub)));
-									}, 2000);
-								}
-							}
-						});
-					}
-				});
 			});
 		});
-
     });
 }
 
