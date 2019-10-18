@@ -125,7 +125,7 @@ function talker() {
 							}
 
 							// Product wartet auf abgabe
-							if (last_Produkt_wartet_auf_Abgabe === 0 && _obj.value.DB33.Produkt_wartet_auf_Abgabe === 1){
+							if (last_Produkt_wartet_auf_Abgabe === false && _obj.value.DB33.Produkt_wartet_auf_Abgabe === true){
 								// Steigende Flanke nachricht schicken.
 								var obj_to_send = {
 									title:'Product Wartet auf Abgabe',
@@ -141,7 +141,7 @@ function talker() {
 							last_Produkt_wartet_auf_Abgabe = _obj.value.DB33.Produkt_wartet_auf_Abgabe;
 
 							// Product abgegeben
-							if (last_Product_abgegeben === 0 && _obj.value.DB33.Product_abgegeben === 1){
+							if (last_Product_abgegeben === false && _obj.value.DB33.Product_abgegeben === true){
 								// Steigende Flanke nachricht schicken.
 								var obj_to_send = {
 									title:'Product an den AGV abgegeben.',
